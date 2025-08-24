@@ -1,0 +1,33 @@
+<div class="listen-container">
+  <div class="music-player">
+    <div class="player-controls">
+      <button
+        class="play-pause-btn"
+        [class.playing]="isPlaying$ | async"
+        [disabled]="isLoading$ | async"
+        (click)="onTogglePlayPause()"
+        [attr.aria-label]="(isPlaying$ | async) ? 'Pause' : 'Play'"
+      >
+        <div class="loading-spinner" *ngIf="isLoading$ | async"></div>
+
+        <svg
+          *ngIf="!(isLoading$ | async) && !(isPlaying$ | async)"
+          class="play-icon"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path d="M8 5v14l11-7z" />
+        </svg>
+
+        <svg
+          *ngIf="!(isLoading$ | async) && (isPlaying$ | async)"
+          class="pause-icon"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+        >
+          <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
