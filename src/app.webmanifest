@@ -2,13 +2,13 @@
   "name": "Yen's",
   "short_name": "Yen's",
   "description": "Yen's Music Player",
-  "version": "1.1",
+  "version": "1.2",
   "theme_color": "#1a1a2e",
   "background_color": "#1a1a2e",
   "display": "standalone",
   "orientation": "portrait-primary",
   "scope": "./",
-  "start_url": "./listen",
+  "start_url": "./listen?v=1.2",
   "categories": ["music", "entertainment"],
   "icons": [
     {
