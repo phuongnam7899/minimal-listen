@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AudioService, Song } from '../services/audio.service';
+import { PwaService } from '../services/pwa.service';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -18,14 +19,17 @@ export class ListenComponent implements OnInit, OnDestroy {
   currentSong$: Observable<Song | null>;
   isLoading$: Observable<boolean>;
 
-  constructor(private audioService: AudioService) {
+  constructor(
+    private audioService: AudioService,
+    private pwaService: PwaService // Keep for offline functionality
+  ) {
     this.isPlaying$ = this.audioService.isPlaying$;
     this.currentSong$ = this.audioService.currentSong$;
     this.isLoading$ = this.audioService.isLoading$;
   }
 
   ngOnInit(): void {
-    // Component initialization logic if needed
+    // PWA service runs in background for offline functionality
   }
 
   ngOnDestroy(): void {

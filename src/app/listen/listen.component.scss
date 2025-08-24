@@ -87,42 +87,6 @@
   }
 }
 
-.status-text {
-  margin-top: 20px;
-
-  p {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.9rem;
-    margin: 0;
-    font-weight: 300;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  .loading-text {
-    color: #667eea;
-  }
-
-  .playing-text {
-    color: #f093fb;
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  .paused-text {
-    color: rgba(255, 255, 255, 0.6);
-  }
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 0.8;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
 // Mobile responsiveness
 @media (max-width: 480px) {
   .listen-container {
@@ -147,10 +111,6 @@
 }
 
 @media (max-width: 320px) {
-  .song-title {
-    font-size: 1.1rem;
-  }
-
   .play-pause-btn {
     width: 60px;
     height: 60px;

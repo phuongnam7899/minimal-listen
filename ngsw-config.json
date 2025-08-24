@@ -28,7 +28,7 @@
     },
     {
       "name": "music",
-      "installMode": "lazy",
+      "installMode": "prefetch",
       "updateMode": "prefetch",
       "resources": {
         "files": [
@@ -36,14 +36,15 @@
           "/assets/music/*.wav",
           "/assets/music/*.ogg",
           "/assets/music/*.m4a",
+          "/assets/music/*.aac",
           "/assets/music/*.json"
         ]
       },
       "cacheConfig": {
-        "maxSize": 50,
-        "maxAge": "30d",
-        "timeout": "10s",
-        "strategy": "performance"
+        "maxSize": 100,
+        "maxAge": "365d",
+        "timeout": "30s",
+        "strategy": "freshness"
       }
     }
   ]
