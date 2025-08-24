@@ -49,8 +49,8 @@ export class AudioService {
 
     this.audio.addEventListener('canplaythrough', () => {
       this.isLoadingSubject.next(false);
-      // Auto-play the song when it's ready
-      this.play();
+      console.log(`Audio ${selectedSong.filename} ready to play`);
+      // Don't auto-play - wait for user interaction
     });
 
     this.audio.addEventListener('ended', () => {
@@ -68,15 +68,28 @@ export class AudioService {
 
   public play(): void {
     if (this.audio && !this.isLoadingSubject.value) {
+      console.log('Attempting to play audio...');
       this.audio
         .play()
         .then(() => {
+          console.log('Audio playback started successfully');
           this.isPlayingSubject.next(true);
         })
         .catch((error) => {
           console.error('Error playing audio:', error);
           this.isPlayingSubject.next(false);
+
+          // If it's a NotAllowedError, it might be an autoplay policy issue
+          if (error.name === 'NotAllowedError') {
+            console.log(
+              'Audio play blocked by browser policy - user interaction required'
+            );
+          }
         });
+    } else if (this.isLoadingSubject.value) {
+      console.log('Audio still loading, please wait...');
+    } else {
+      console.log('No audio loaded');
     }
   }
 
@@ -88,6 +101,10 @@ export class AudioService {
   }
 
   public togglePlayPause(): void {
+    console.log(
+      'Toggle play/pause clicked. Currently playing:',
+      this.isPlayingSubject.value
+    );
     if (this.isPlayingSubject.value) {
       this.pause();
     } else {

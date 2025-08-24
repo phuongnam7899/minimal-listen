@@ -11,7 +11,8 @@
           "/index.html",
           "/app.webmanifest",
           "/*.css",
-          "/*.js"
+          "/*.js",
+          "/assets/music/*.mp3"
         ]
       }
     },
@@ -21,30 +22,9 @@
       "updateMode": "prefetch",
       "resources": {
         "files": [
-          "/assets/**",
+          "/assets/icons/*",
           "/media/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"
         ]
-      }
-    },
-    {
-      "name": "music",
-      "installMode": "prefetch",
-      "updateMode": "prefetch",
-      "resources": {
-        "files": [
-          "/assets/music/*.mp3",
-          "/assets/music/*.wav",
-          "/assets/music/*.ogg",
-          "/assets/music/*.m4a",
-          "/assets/music/*.aac",
-          "/assets/music/*.json"
-        ]
-      },
-      "cacheConfig": {
-        "maxSize": 100,
-        "maxAge": "365d",
-        "timeout": "30s",
-        "strategy": "freshness"
       }
     }
   ]

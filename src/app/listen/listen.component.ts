@@ -30,6 +30,19 @@ export class ListenComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // PWA service runs in background for offline functionality
+
+    // Debug: Log current states
+    this.isPlaying$.pipe(takeUntil(this.destroy$)).subscribe((playing) => {
+      console.log('Component: isPlaying changed to:', playing);
+    });
+
+    this.isLoading$.pipe(takeUntil(this.destroy$)).subscribe((loading) => {
+      console.log('Component: isLoading changed to:', loading);
+    });
+
+    this.currentSong$.pipe(takeUntil(this.destroy$)).subscribe((song) => {
+      console.log('Component: currentSong changed to:', song);
+    });
   }
 
   ngOnDestroy(): void {
@@ -38,6 +51,7 @@ export class ListenComponent implements OnInit, OnDestroy {
   }
 
   onTogglePlayPause(): void {
+    console.log('Component: Play/pause button clicked');
     this.audioService.togglePlayPause();
   }
 }
