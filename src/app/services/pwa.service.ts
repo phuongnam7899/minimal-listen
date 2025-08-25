@@ -9,13 +9,16 @@ export class PwaService {
   private deferredPrompt: any;
   private isOnlineSubject = new BehaviorSubject<boolean>(navigator.onLine);
   private isInstallableSubject = new BehaviorSubject<boolean>(false);
+  private updateAvailableSubject = new BehaviorSubject<boolean>(false);
 
   public isOnline$ = this.isOnlineSubject.asObservable();
   public isInstallable$ = this.isInstallableSubject.asObservable();
+  public updateAvailable$ = this.updateAvailableSubject.asObservable();
 
   constructor() {
     this.setupOnlineStatusDetection();
     this.setupInstallPrompt();
+    this.setupUpdateDetection();
   }
 
   private setupOnlineStatusDetection(): void {
@@ -45,6 +48,36 @@ export class PwaService {
       this.isInstallableSubject.next(false);
       this.deferredPrompt = null;
     });
+  }
+
+  private setupUpdateDetection(): void {
+    // Check if service worker is supported
+    if ('serviceWorker' in navigator) {
+      // Listen for service worker updates
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        console.log('New service worker activated');
+        this.updateAvailableSubject.next(true);
+      });
+
+      // Check for updates on page load
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.addEventListener('updatefound', () => {
+          console.log('Service worker update found');
+          const newWorker = registration.installing;
+          if (newWorker) {
+            newWorker.addEventListener('statechange', () => {
+              if (
+                newWorker.state === 'installed' &&
+                navigator.serviceWorker.controller
+              ) {
+                console.log('New version available');
+                this.updateAvailableSubject.next(true);
+              }
+            });
+          }
+        });
+      });
+    }
   }
 
   public async installPwa(): Promise<boolean> {
@@ -82,5 +115,30 @@ export class PwaService {
       window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as any).standalone === true
     );
+  }
+
+  public async checkForUpdates(): Promise<void> {
+    if ('serviceWorker' in navigator) {
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        await registration.update();
+        console.log('Update check completed');
+      } catch (error) {
+        console.error('Error checking for updates:', error);
+      }
+    }
+  }
+
+  public async applyUpdate(): Promise<void> {
+    if ('serviceWorker' in navigator) {
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        await registration.update();
+        // Reload the page to apply the update
+        window.location.reload();
+      } catch (error) {
+        console.error('Error applying update:', error);
+      }
+    }
   }
 }

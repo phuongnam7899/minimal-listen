@@ -18,6 +18,7 @@ export class ListenComponent implements OnInit, OnDestroy {
   isPlaying$: Observable<boolean>;
   currentSong$: Observable<Song | null>;
   isLoading$: Observable<boolean>;
+  updateAvailable$: Observable<boolean>;
 
   constructor(
     private audioService: AudioService,
@@ -26,6 +27,7 @@ export class ListenComponent implements OnInit, OnDestroy {
     this.isPlaying$ = this.audioService.isPlaying$;
     this.currentSong$ = this.audioService.currentSong$;
     this.isLoading$ = this.audioService.isLoading$;
+    this.updateAvailable$ = this.pwaService.updateAvailable$;
   }
 
   ngOnInit(): void {
@@ -43,6 +45,9 @@ export class ListenComponent implements OnInit, OnDestroy {
     this.currentSong$.pipe(takeUntil(this.destroy$)).subscribe((song) => {
       console.log('Component: currentSong changed to:', song);
     });
+
+    // Check for updates when component loads
+    this.pwaService.checkForUpdates();
   }
 
   ngOnDestroy(): void {
@@ -53,5 +58,10 @@ export class ListenComponent implements OnInit, OnDestroy {
   onTogglePlayPause(): void {
     console.log('Component: Play/pause button clicked');
     this.audioService.togglePlayPause();
+  }
+
+  onApplyUpdate(): void {
+    console.log('Component: Applying update');
+    this.pwaService.applyUpdate();
   }
 }

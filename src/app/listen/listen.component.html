@@ -1,4 +1,12 @@
 <div class="listen-container">
+  <!-- Update Notification -->
+  <div class="update-notification" *ngIf="updateAvailable$ | async">
+    <div class="update-content">
+      <span>New version available!</span>
+      <button class="update-btn" (click)="onApplyUpdate()">Update Now</button>
+    </div>
+  </div>
+
   <div class="music-player">
     <div class="player-controls">
       <button
@@ -28,6 +36,11 @@
           <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
         </svg>
       </button>
+    </div>
+
+    <!-- iOS Loading Indicator -->
+    <div class="ios-loading" *ngIf="isLoading$ | async">
+      <p>Loading...</p>
     </div>
   </div>
 </div>
