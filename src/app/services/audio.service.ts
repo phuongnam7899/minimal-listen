@@ -27,6 +27,35 @@ export class AudioService {
 
   constructor() {
     this.loadRandomSong();
+    this.preloadAllSongs();
+  }
+
+  private async preloadAllSongs(): Promise<void> {
+    console.log('Preloading songs for offline use...');
+
+    // Use browser cache API if available
+    if ('caches' in window) {
+      try {
+        const cache = await caches.open('music-cache-v1');
+        const songUrls = this.songs.map(
+          (song) => `assets/music/${song.filename}`
+        );
+
+        for (const url of songUrls) {
+          try {
+            await cache.add(url);
+            console.log(`Cached: ${url}`);
+          } catch (error) {
+            console.warn(`Failed to cache: ${url}`, error);
+          }
+        }
+        console.log('All songs cached for offline use');
+      } catch (error) {
+        console.warn('Cache API not available or failed:', error);
+      }
+    } else {
+      console.log('Cache API not supported');
+    }
   }
 
   private loadRandomSong(): void {

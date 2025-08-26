@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Yen's</title>
+    <base href="/" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <meta name="theme-color" content="#1a1a2e" />
+
+    <!-- iOS PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Yen's" />
+
+    <!-- iOS Icons -->
+    <link rel="apple-touch-icon" href="assets/icons/icon-152x152.png" />
+    <link
+      rel="apple-touch-icon"
+      sizes="152x152"
+      href="assets/icons/icon-152x152.png"
+    />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="assets/icons/icon-192x192.png"
+    />
+
+    <!-- Prevent caching for iOS -->
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <style>
+      body {
+        margin: 0;
+        padding: 20px;
+        background: linear-gradient(
+          135deg,
+          #1a1a2e 0%,
+          #16213e 50%,
+          #0f3460 100%
+        );
+        color: white;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .container {
+        max-width: 400px;
+        padding: 40px 20px;
+      }
+
+      .title {
+        font-size: 2rem;
+        margin-bottom: 20px;
+        color: #f093fb;
+      }
+
+      .message {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 30px;
+        opacity: 0.9;
+      }
+
+      .btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 30px;
+        border: none;
+        border-radius: 25px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin: 10px;
+      }
+
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 class="title">Yen's Music Player</h1>
+      <p class="message">
+        For the best experience on iOS Safari, please use Safari's "Add to Home
+        Screen" feature or open this app in Chrome for iOS.
+      </p>
+      <a href="/listen" class="btn">Try Again</a>
+      <a
+        href="https://apps.apple.com/app/google-chrome/id535886823"
+        class="btn"
+        target="_blank"
+        >Get Chrome for iOS</a
+      >
+    </div>
+  </body>
+</html>

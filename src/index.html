@@ -48,6 +48,71 @@
     <meta http-equiv="Expires" content="0" />
   </head>
   <body>
+    <!-- iOS Safari Detection and Fallback -->
+    <script>
+      // Detect iOS Safari
+      function isIOSSafari() {
+        const userAgent = navigator.userAgent;
+        const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+        const isSafari =
+          /Safari/.test(userAgent) && !/Chrome|CriOS|FxiOS/.test(userAgent);
+        return isIOS && isSafari;
+      }
+
+      // Show iOS-specific message if detected
+      if (isIOSSafari()) {
+        document.body.innerHTML = `
+          <div style="
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+          ">
+            <div style="max-width: 400px; padding: 40px 20px;">
+              <h1 style="font-size: 2rem; margin-bottom: 20px; color: #f093fb;">Yen's Music Player</h1>
+              <p style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 30px; opacity: 0.9;">
+                For iOS devices, please use <strong>Chrome for iOS</strong> for the best experience.
+                Safari on iOS has limited PWA support.
+              </p>
+              <a href="https://apps.apple.com/app/google-chrome/id535886823" 
+                 style="
+                   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                   color: white;
+                   padding: 15px 30px;
+                   border: none;
+                   border-radius: 25px;
+                   font-size: 1rem;
+                   text-decoration: none;
+                   display: inline-block;
+                   margin: 10px;
+                   transition: all 0.3s ease;
+                 "
+                 target="_blank">Get Chrome for iOS</a>
+              <br>
+              <button onclick="location.reload()" 
+                      style="
+                        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                        color: white;
+                        padding: 15px 30px;
+                        border: none;
+                        border-radius: 25px;
+                        font-size: 1rem;
+                        cursor: pointer;
+                        margin: 10px;
+                        transition: all 0.3s ease;
+                      ">Try Anyway</button>
+            </div>
+          </div>
+        `;
+      }
+    </script>
+
     <app-root></app-root>
     <noscript
       >Please enable JavaScript to continue using this application.</noscript

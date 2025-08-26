@@ -51,7 +51,26 @@ export class PwaService {
   }
 
   private setupUpdateDetection(): void {
-    // Check if service worker is supported
+    // Detect iOS Safari
+    const isIOSSafari = (): boolean => {
+      const userAgent = navigator.userAgent;
+      const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+      const isSafari =
+        /Safari/.test(userAgent) && !/Chrome|CriOS|FxiOS/.test(userAgent);
+      return isIOS && isSafari;
+    };
+
+    // For iOS Safari, use simpler detection
+    if (isIOSSafari()) {
+      console.log('iOS Safari detected - using simple update detection');
+      // Check for updates periodically for iOS
+      setInterval(() => {
+        this.checkForUpdatesIOS();
+      }, 60000); // Check every minute
+      return;
+    }
+
+    // Check if service worker is supported (non-iOS or iOS Chrome)
     if ('serviceWorker' in navigator) {
       // Listen for service worker updates
       navigator.serviceWorker.addEventListener('controllerchange', () => {
@@ -77,6 +96,27 @@ export class PwaService {
           }
         });
       });
+    }
+  }
+
+  private async checkForUpdatesIOS(): Promise<void> {
+    try {
+      // Simple version check for iOS - check if main.js has changed
+      const response = await fetch('/index.html', { cache: 'no-cache' });
+      const text = await response.text();
+      const currentVersion = text.match(/main-(\w+)\.js/)?.[1];
+
+      const storedVersion = localStorage.getItem('app-version');
+      if (storedVersion && currentVersion && storedVersion !== currentVersion) {
+        console.log('iOS: New version detected');
+        this.updateAvailableSubject.next(true);
+      }
+
+      if (currentVersion) {
+        localStorage.setItem('app-version', currentVersion);
+      }
+    } catch (error) {
+      console.error('iOS update check failed:', error);
     }
   }
 

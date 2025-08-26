@@ -30,7 +30,8 @@
               "src/favicon.ico",
               "src/assets",
               "src/app.webmanifest",
-              "src/_redirects"
+              "src/_redirects",
+              "src/ios-fallback.html"
             ],
             "styles": ["src/styles.scss"],
             "scripts": []

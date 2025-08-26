@@ -1,0 +1,41 @@
+<div class="debug-console" *ngIf="isVisible" [class.minimized]="isMinimized">
+  <!-- Header -->
+  <div class="console-header">
+    <span class="console-title">🐛 Debug Console</span>
+    <div class="console-controls">
+      <button class="btn-control" (click)="clearLogs()" title="Clear logs">
+        🗑️
+      </button>
+      <button
+        class="btn-control"
+        (click)="toggleMinimize()"
+        title="Minimize/Maximize"
+      >
+        {{ isMinimized ? "📖" : "📕" }}
+      </button>
+      <button class="btn-control" (click)="close()" title="Close">❌</button>
+    </div>
+  </div>
+
+  <!-- Logs Container -->
+  <div class="console-logs" *ngIf="!isMinimized">
+    <div class="log-count">{{ logs.length }} logs</div>
+
+    <div class="logs-list">
+      <div
+        *ngFor="let log of logs; trackBy: trackByLogId"
+        class="log-entry"
+        [ngClass]="getLogClass(log.type)"
+      >
+        <span class="log-time">{{ formatTime(log.timestamp) }}</span>
+        <span class="log-type">{{ log.type.toUpperCase() }}</span>
+        <span class="log-message">{{ log.message }}</span>
+      </div>
+    </div>
+
+    <div *ngIf="logs.length === 0" class="no-logs">
+      No console logs yet. All console.log, console.error, console.warn, and
+      console.info will appear here.
+    </div>
+  </div>
+</div>

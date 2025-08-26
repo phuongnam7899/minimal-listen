@@ -2,13 +2,14 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AudioService, Song } from '../services/audio.service';
 import { PwaService } from '../services/pwa.service';
+import { DebugConsoleComponent } from '../debug-console/debug-console.component';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-listen',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, DebugConsoleComponent],
   templateUrl: './listen.component.html',
   styleUrls: ['./listen.component.scss'],
 })
@@ -19,6 +20,9 @@ export class ListenComponent implements OnInit, OnDestroy {
   currentSong$: Observable<Song | null>;
   isLoading$: Observable<boolean>;
   updateAvailable$: Observable<boolean>;
+
+  // 🐛 DEBUG MODE - Set to false to hide debug console
+  showDebugConsole = true;
 
   constructor(
     private audioService: AudioService,
