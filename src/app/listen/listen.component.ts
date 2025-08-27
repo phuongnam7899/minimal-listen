@@ -24,6 +24,10 @@ export class ListenComponent implements OnInit, OnDestroy {
   // 🐛 DEBUG MODE - Set to false to hide debug console
   showDebugConsole = true;
 
+  // Force load button for iPhone
+  showForceLoadButton = false;
+  private isCurrentlyLoading = false;
+
   constructor(
     private audioService: AudioService,
     private pwaService: PwaService // Keep for offline functionality
@@ -37,13 +41,35 @@ export class ListenComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // PWA service runs in background for offline functionality
 
-    // Debug: Log current states
+    // Debug: Log current states and device info
+    const isIPhone = /iPhone/.test(navigator.userAgent);
+    const isIPad = /iPad/.test(navigator.userAgent);
+    console.log('Device info:', {
+      isIPhone,
+      isIPad,
+      userAgent: navigator.userAgent,
+    });
+
     this.isPlaying$.pipe(takeUntil(this.destroy$)).subscribe((playing) => {
       console.log('Component: isPlaying changed to:', playing);
     });
 
     this.isLoading$.pipe(takeUntil(this.destroy$)).subscribe((loading) => {
       console.log('Component: isLoading changed to:', loading);
+      this.isCurrentlyLoading = loading;
+
+      if (isIPhone && loading) {
+        console.log('iPhone: Loading state detected');
+        // Show force load button after 4 seconds on iPhone
+        setTimeout(() => {
+          if (this.isCurrentlyLoading) {
+            this.showForceLoadButton = true;
+            console.log('iPhone: Showing force load button');
+          }
+        }, 4000);
+      } else {
+        this.showForceLoadButton = false;
+      }
     });
 
     this.currentSong$.pipe(takeUntil(this.destroy$)).subscribe((song) => {
@@ -67,5 +93,24 @@ export class ListenComponent implements OnInit, OnDestroy {
   onApplyUpdate(): void {
     console.log('Component: Applying update');
     this.pwaService.applyUpdate();
+  }
+
+  onForceLoad(): void {
+    console.log('Component: Force load button clicked');
+    this.showForceLoadButton = false;
+    // Create a dummy audio context to unlock audio on iPhone
+    try {
+      const audioContext = new (window.AudioContext ||
+        (window as any).webkitAudioContext)();
+      audioContext.resume().then(() => {
+        console.log('iPhone: Audio context unlocked');
+        // Force reload the audio service
+        this.audioService.forceReload();
+      });
+    } catch (error) {
+      console.error('iPhone: Failed to unlock audio context:', error);
+      // Fallback: just force reload
+      this.audioService.forceReload();
+    }
   }
 }

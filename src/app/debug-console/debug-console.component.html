@@ -3,6 +3,13 @@
   <div class="console-header">
     <span class="console-title">🐛 Debug Console</span>
     <div class="console-controls">
+      <button
+        class="btn-control"
+        (click)="copyLogs()"
+        title="Copy all logs to clipboard"
+      >
+        📋
+      </button>
       <button class="btn-control" (click)="clearLogs()" title="Clear logs">
         🗑️
       </button>
@@ -19,7 +26,12 @@
 
   <!-- Logs Container -->
   <div class="console-logs" *ngIf="!isMinimized">
-    <div class="log-count">{{ logs.length }} logs</div>
+    <div class="log-count">
+      {{ logs.length }} logs
+      <span class="copy-success" *ngIf="copySuccess"
+        >📋 Copied to clipboard!</span
+      >
+    </div>
 
     <div class="logs-list">
       <div

@@ -19,6 +19,7 @@ export class DebugConsoleComponent implements OnInit, OnDestroy {
   logs: ConsoleLog[] = [];
   isVisible = true;
   isMinimized = false;
+  copySuccess = false;
   private logId = 0;
 
   // Store original console methods
@@ -107,5 +108,87 @@ export class DebugConsoleComponent implements OnInit, OnDestroy {
 
   trackByLogId(index: number, log: ConsoleLog): number {
     return log.id;
+  }
+
+  async copyLogs(): Promise<void> {
+    try {
+      // Format logs for clipboard
+      const logText = this.logs
+        .slice()
+        .reverse() // Show oldest logs first in clipboard
+        .map((log) => {
+          const timestamp = this.formatTime(log.timestamp);
+          const type = log.type.toUpperCase().padEnd(5);
+          return `[${timestamp}] ${type} ${log.message}`;
+        })
+        .join('\n');
+
+      // Add header with device info
+      const header = [
+        "=== YEN'S MUSIC PWA DEBUG LOGS ===",
+        `Generated: ${new Date().toLocaleString()}`,
+        `User Agent: ${navigator.userAgent}`,
+        `Total Logs: ${this.logs.length}`,
+        '================================\n',
+      ].join('\n');
+
+      const fullText = header + logText;
+
+      // Use the Clipboard API
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(fullText);
+        this.showCopySuccess();
+      } else {
+        // Fallback for older browsers
+        this.fallbackCopyTextToClipboard(fullText);
+      }
+    } catch (error) {
+      console.error('Failed to copy logs:', error);
+      this.fallbackCopyTextToClipboard(this.getLogsAsText());
+    }
+  }
+
+  private fallbackCopyTextToClipboard(text: string): void {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      const successful = document.execCommand('copy');
+      if (successful) {
+        this.showCopySuccess();
+      } else {
+        console.error('Fallback: Copy command was unsuccessful');
+      }
+    } catch (err) {
+      console.error('Fallback: Oops, unable to copy', err);
+    }
+
+    document.body.removeChild(textArea);
+  }
+
+  private getLogsAsText(): string {
+    return this.logs
+      .slice()
+      .reverse()
+      .map(
+        (log) =>
+          `[${this.formatTime(log.timestamp)}] ${log.type.toUpperCase()} ${
+            log.message
+          }`
+      )
+      .join('\n');
+  }
+
+  private showCopySuccess(): void {
+    this.copySuccess = true;
+    setTimeout(() => {
+      this.copySuccess = false;
+    }, 2000);
   }
 }

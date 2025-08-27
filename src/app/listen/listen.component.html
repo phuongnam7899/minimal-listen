@@ -38,9 +38,16 @@
       </button>
     </div>
 
-    <!-- iOS Loading Indicator -->
+    <!-- iOS Loading Indicator with user action -->
     <div class="ios-loading" *ngIf="isLoading$ | async">
       <p>Loading...</p>
+      <button
+        class="force-load-btn"
+        (click)="onForceLoad()"
+        *ngIf="showForceLoadButton"
+      >
+        Tap to Enable Audio
+      </button>
     </div>
   </div>
 
