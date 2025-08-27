@@ -29,9 +29,24 @@
   border-radius: 8px 8px 0 0;
 }
 
+.console-title-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .console-title {
   font-weight: bold;
   color: #4caf50;
+}
+
+.console-version {
+  font-size: 10px;
+  color: #888;
+  background: rgba(76, 175, 80, 0.1);
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid rgba(76, 175, 80, 0.3);
 }
 
 .console-controls {

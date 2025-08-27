@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../environments/environment';
 
 interface ConsoleLog {
   type: 'log' | 'error' | 'warn' | 'info';
@@ -20,6 +21,7 @@ export class DebugConsoleComponent implements OnInit, OnDestroy {
   isVisible = true;
   isMinimized = false;
   copySuccess = false;
+  appVersion = environment.version;
   private logId = 0;
 
   // Store original console methods
@@ -126,6 +128,7 @@ export class DebugConsoleComponent implements OnInit, OnDestroy {
       // Add header with device info
       const header = [
         "=== YEN'S MUSIC PWA DEBUG LOGS ===",
+        `App Version: ${this.appVersion}`,
         `Generated: ${new Date().toLocaleString()}`,
         `User Agent: ${navigator.userAgent}`,
         `Total Logs: ${this.logs.length}`,

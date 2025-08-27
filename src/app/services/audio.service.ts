@@ -34,6 +34,14 @@ export class AudioService {
     console.log(`💾 Cache API: ${typeof caches !== 'undefined'}`);
     console.log(`🎶 Available songs: ${this.songs.length}`);
 
+    // Detect PWA mode
+    const isPWA =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone === true;
+    console.log(`📱 PWA Mode: ${isPWA}`);
+    console.log(`🌐 Window location: ${window.location.href}`);
+    console.log(`🏠 Base href: ${document.baseURI}`);
+
     this.loadRandomSong();
     this.preloadAllSongs();
   }
@@ -177,14 +185,29 @@ export class AudioService {
 
     console.log(`🎧 Creating new audio element for: ${selectedSong.filename}`);
     this.audio = new Audio();
-    this.audio.src = `assets/music/${selectedSong.filename}`;
 
-    // iPhone optimization - use lighter preload
+    // iPhone and PWA optimizations
     const isIPhone = /iPhone/.test(navigator.userAgent);
+    const isPWA =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone === true;
+
+    // PWA-specific audio source handling
+    if (isPWA) {
+      // In PWA mode, use absolute URLs to avoid path issues
+      this.audio.src = `${window.location.origin}/assets/music/${selectedSong.filename}`;
+      console.log(`📱 PWA: Using absolute URL for audio source`);
+    } else {
+      this.audio.src = `assets/music/${selectedSong.filename}`;
+      console.log(`🌐 Browser: Using relative URL for audio source`);
+    }
+
+    // Cross-Origin settings for PWA
+    this.audio.crossOrigin = 'anonymous';
     this.audio.preload = isIPhone ? 'metadata' : 'auto';
 
     console.log(
-      `🔧 Audio element configured: src=${this.audio.src}, preload=${this.audio.preload}`
+      `🔧 Audio element configured: src=${this.audio.src}, preload=${this.audio.preload}, crossOrigin=${this.audio.crossOrigin}`
     );
 
     if (isIPhone) {
@@ -373,6 +396,10 @@ export class AudioService {
           );
           this.isPlayingSubject.next(false);
 
+          const isPWA =
+            window.matchMedia('(display-mode: standalone)').matches ||
+            (window.navigator as any).standalone === true;
+
           if (error.name === 'NotAllowedError') {
             this.errorSubject.next(
               'Audio playback requires user interaction. Click the play button to start.'
@@ -380,6 +407,17 @@ export class AudioService {
             console.log(
               '🔒 Audio play blocked by browser policy - user interaction required'
             );
+          } else if (error.name === 'NotSupportedError' && isPWA) {
+            console.log(
+              '🚨 PWA: NotSupportedError detected - attempting audio reload fix'
+            );
+            this.errorSubject.next(
+              'PWA audio error detected. Trying to reload...'
+            );
+            // Try to reload the audio with a slight delay
+            setTimeout(() => {
+              this.reloadAudioForPWA();
+            }, 1000);
           } else {
             this.errorSubject.next(
               'Error playing audio. Please check if the audio file is valid.'
@@ -436,6 +474,48 @@ export class AudioService {
     if (currentSong) {
       console.log('AudioService: Reloading current song');
       this.loadRandomSong();
+    }
+  }
+
+  private reloadAudioForPWA(): void {
+    console.log('🔄 PWA: Attempting to fix NotSupportedError');
+    const currentSong = this.currentSongSubject.value;
+
+    if (this.audio && currentSong) {
+      // Try different approaches for PWA
+      console.log('🔧 PWA: Recreating audio element with different settings');
+
+      // Clean up current audio
+      this.audio.pause();
+      this.audio = null;
+
+      // Create new audio with different settings
+      this.audio = new Audio();
+      this.audio.crossOrigin = null; // Remove crossOrigin
+      this.audio.preload = 'none'; // Minimal preload for PWA
+
+      // Try relative path first in PWA
+      this.audio.src = `./assets/music/${currentSong.filename}`;
+      console.log(`🔧 PWA: Using relative path: ${this.audio.src}`);
+
+      // Add minimal event listeners
+      this.audio.addEventListener('canplay', () => {
+        console.log('🎵 PWA: Audio ready after reload fix');
+        this.isLoadingSubject.next(false);
+        this.errorSubject.next(null);
+      });
+
+      this.audio.addEventListener('error', (e) => {
+        console.error('🚨 PWA: Audio still failing after reload:', e);
+        // Try absolute URL as final fallback
+        if (this.audio && !this.audio.src.includes('://')) {
+          console.log('🔧 PWA: Trying absolute URL as final fallback');
+          this.audio.src = `${window.location.origin}/assets/music/${currentSong.filename}`;
+        }
+      });
+
+      // Force load
+      this.audio.load();
     }
   }
 }

@@ -1,7 +1,10 @@
 <div class="debug-console" *ngIf="isVisible" [class.minimized]="isMinimized">
   <!-- Header -->
   <div class="console-header">
-    <span class="console-title">🐛 Debug Console</span>
+    <div class="console-title-section">
+      <span class="console-title">🐛 Debug Console</span>
+      <span class="console-version">v{{ appVersion }}</span>
+    </div>
     <div class="console-controls">
       <button
         class="btn-control"
