@@ -5,6 +5,7 @@
     {
       "name": "app",
       "installMode": "prefetch",
+      "updateMode": "prefetch",
       "resources": {
         "files": [
           "/favicon.ico",
@@ -18,9 +19,12 @@
     {
       "name": "assets",
       "installMode": "prefetch",
+      "updateMode": "prefetch",
       "resources": {
         "files": ["/assets/**"]
       }
     }
-  ]
+  ],
+  "navigationUrls": ["/**", "!/**/*.*", "!/**/*__*", "!/**/*__*/**"],
+  "navigationRequestStrategy": "performance"
 }
