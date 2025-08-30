@@ -14,6 +14,9 @@
           "/*.css",
           "/*.js"
         ]
+      },
+      "cacheQueryOptions": {
+        "ignoreVary": true
       }
     },
     {
@@ -21,7 +24,21 @@
       "installMode": "prefetch",
       "updateMode": "prefetch",
       "resources": {
-        "files": ["/assets/**"]
+        "files": ["/assets/**", "/assets/music/**"]
+      },
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "api-performance",
+      "urls": ["/listen", "/", "/**"],
+      "cacheConfig": {
+        "strategy": "performance",
+        "maxSize": 100,
+        "maxAge": "1d"
       }
     }
   ],

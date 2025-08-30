@@ -16,9 +16,16 @@ export class PwaService {
   public updateAvailable$ = this.updateAvailableSubject.asObservable();
 
   constructor() {
+    console.log('🔧 PwaService: Initializing...');
+    console.log(`📱 User Agent: ${navigator.userAgent}`);
+    console.log(`🌐 Service Worker supported: ${'serviceWorker' in navigator}`);
+    console.log(`💾 Cache API supported: ${typeof caches !== 'undefined'}`);
+    console.log(`📲 Standalone mode: ${this.isStandalone()}`);
+
     this.setupOnlineStatusDetection();
     this.setupInstallPrompt();
     this.setupUpdateDetection();
+    this.debugServiceWorkerStatus();
   }
 
   private setupOnlineStatusDetection(): void {
@@ -179,6 +186,116 @@ export class PwaService {
       } catch (error) {
         console.error('Error applying update:', error);
       }
+    }
+  }
+
+  private async debugServiceWorkerStatus(): Promise<void> {
+    console.log('🔍 PWA: Debugging Service Worker status...');
+
+    if (!('serviceWorker' in navigator)) {
+      console.warn('⚠️ PWA: Service Worker not supported');
+      return;
+    }
+
+    try {
+      // Check registration status
+      const registration = await navigator.serviceWorker.getRegistration();
+      if (!registration) {
+        console.warn('⚠️ PWA: No Service Worker registered yet');
+
+        // Wait for registration and check again
+        setTimeout(async () => {
+          const newReg = await navigator.serviceWorker.getRegistration();
+          if (newReg) {
+            console.log('✅ PWA: Service Worker registered after delay');
+            this.logServiceWorkerDetails(newReg);
+          } else {
+            console.error('🚨 PWA: Service Worker failed to register');
+          }
+        }, 5000);
+        return;
+      }
+
+      console.log('✅ PWA: Service Worker is registered');
+      this.logServiceWorkerDetails(registration);
+
+      // Test cache API
+      await this.testCacheAPI();
+
+      // Test offline navigation
+      await this.testOfflineNavigation();
+    } catch (error) {
+      console.error('🚨 PWA: Error debugging Service Worker:', error);
+    }
+  }
+
+  private logServiceWorkerDetails(
+    registration: ServiceWorkerRegistration
+  ): void {
+    console.log('📋 PWA: Service Worker Details:');
+    console.log(`  - Active: ${!!registration.active}`);
+    console.log(`  - Installing: ${!!registration.installing}`);
+    console.log(`  - Waiting: ${!!registration.waiting}`);
+    console.log(`  - Scope: ${registration.scope}`);
+    console.log(`  - Update via cache: ${registration.updateViaCache}`);
+
+    if (registration.active) {
+      console.log(`  - State: ${registration.active.state}`);
+      console.log(`  - Script URL: ${registration.active.scriptURL}`);
+    }
+  }
+
+  private async testCacheAPI(): Promise<void> {
+    console.log('🧪 PWA: Testing Cache API...');
+
+    try {
+      const cacheNames = await caches.keys();
+      console.log(`💾 PWA: Available caches: ${cacheNames.length}`);
+      cacheNames.forEach((name) => console.log(`  - ${name}`));
+
+      // Test if we can access the main cache
+      const mainCache = await caches.open('ngsw:db:Angular Music PWA:1');
+      const cachedRequests = await mainCache.keys();
+      console.log(
+        `📦 PWA: Cached requests in main cache: ${cachedRequests.length}`
+      );
+
+      // Check if index.html is cached
+      const indexResponse = await mainCache.match('/index.html');
+      console.log(`🏠 PWA: index.html cached: ${!!indexResponse}`);
+
+      // Check if music files are cached
+      const musicResponse = await mainCache.match(
+        '/assets/music/anh_den_pho.mp3'
+      );
+      console.log(`🎵 PWA: Music file cached: ${!!musicResponse}`);
+    } catch (error) {
+      console.error('🚨 PWA: Cache API test failed:', error);
+    }
+  }
+
+  private async testOfflineNavigation(): Promise<void> {
+    console.log('🧪 PWA: Testing offline navigation...');
+
+    try {
+      // Simulate offline request to test service worker
+      const controller = navigator.serviceWorker.controller;
+      if (controller) {
+        console.log('✅ PWA: Service Worker is controlling this page');
+
+        // Test if we can fetch the main page offline
+        const response = await fetch('/listen', {
+          cache: 'no-cache',
+          headers: { 'X-Test-Offline': 'true' },
+        });
+        console.log(
+          `🌐 PWA: Navigation test response: ${response.status} ${response.statusText}`
+        );
+      } else {
+        console.warn('⚠️ PWA: No Service Worker controlling this page');
+      }
+    } catch (error) {
+      console.error('🚨 PWA: Offline navigation test failed:', error);
     }
   }
 }
