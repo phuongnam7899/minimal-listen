@@ -5,6 +5,10 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:default": "ng build",
+    "build:yen": "ng build -c yen",
+    "build:nam": "ng build -c nam",
+    "build:vanh": "ng build -c vanh",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

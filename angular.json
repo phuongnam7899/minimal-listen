@@ -29,7 +29,7 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/app.webmanifest",
+              "src/app.json",
               "src/_redirects",
               "src/ios-fallback.html"
             ],
@@ -54,6 +54,48 @@
                   "type": "anyComponentStyle",
                   "maximumWarning": "2kb",
                   "maximumError": "4kb"
+                }
+              ],
+              "outputHashing": "all",
+              "serviceWorker": "ngsw-config.json"
+            },
+            "yen": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.yen.ts"
+                },
+                {
+                  "replace": "src/app.json",
+                  "with": "src/manifest.yen.json"
+                }
+              ],
+              "outputHashing": "all",
+              "serviceWorker": "ngsw-config.json"
+            },
+            "nam": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.nam.ts"
+                },
+                {
+                  "replace": "src/app.json",
+                  "with": "src/manifest.nam.json"
+                }
+              ],
+              "outputHashing": "all",
+              "serviceWorker": "ngsw-config.json"
+            },
+            "vanh": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.vanh.ts"
+                },
+                {
+                  "replace": "src/app.json",
+                  "with": "src/manifest.vanh.json"
                 }
               ],
               "outputHashing": "all",

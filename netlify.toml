@@ -1,6 +1,6 @@
 [build]
   publish = "dist/angular-music-pwa/browser"
-  command = "npm run build"
+  command = "npm run build:${USER:-default}"
 
 [[redirects]]
   from = "/*"

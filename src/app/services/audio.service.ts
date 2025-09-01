@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 export interface Song {
@@ -12,7 +13,7 @@ export interface Song {
 })
 export class AudioService {
   private audio: HTMLAudioElement | null = null;
-  private songs: Song[] = [
+  private songs: Song[] = (environment as any).songs || [
     { id: 1, title: 'Anh Den Pho', filename: 'anh_den_pho.mp3' },
   ];
 
@@ -56,8 +57,9 @@ export class AudioService {
     if ('caches' in window) {
       try {
         const cache = await caches.open('music-cache-v1');
+        const basePath = (environment as any).audioBasePath || 'assets/music';
         const songUrls = this.songs.map(
-          (song) => `assets/music/${song.filename}`
+          (song) => `${basePath}/${song.filename}`
         );
 
         if (isIPhone) {
@@ -154,7 +156,8 @@ export class AudioService {
       );
       // Create a hidden audio element to preload current song
       const preloadAudio = new Audio();
-      preloadAudio.src = `assets/music/${currentSong.filename}`;
+      const basePath = (environment as any).audioBasePath || 'assets/music';
+      preloadAudio.src = `${basePath}/${currentSong.filename}`;
       preloadAudio.preload = 'metadata';
       preloadAudio.addEventListener('canplaythrough', () => {
         console.log(`iPhone: ${currentSong.filename} ready`);
@@ -192,15 +195,12 @@ export class AudioService {
       window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as any).standalone === true;
 
-    // PWA-specific audio source handling
-    if (isPWA) {
-      // In PWA mode, use absolute URLs to avoid path issues
-      this.audio.src = `${window.location.origin}/assets/music/${selectedSong.filename}`;
-      console.log(`📱 PWA: Using absolute URL for audio source`);
-    } else {
-      this.audio.src = `assets/music/${selectedSong.filename}`;
-      console.log(`🌐 Browser: Using relative URL for audio source`);
-    }
+    // Build base path from environment
+    const basePath = (environment as any).audioBasePath || 'assets/music';
+    const url = `${basePath}/${selectedSong.filename}`;
+    // Use absolute URL in PWA to avoid base href issues
+    this.audio.src = isPWA ? `${window.location.origin}/${url}` : url;
+    console.log(`🎼 Audio src set to: ${this.audio.src}`);
 
     // Cross-Origin settings for PWA
     this.audio.crossOrigin = 'anonymous';
@@ -495,7 +495,8 @@ export class AudioService {
       this.audio.preload = 'none'; // Minimal preload for PWA
 
       // Try relative path first in PWA
-      this.audio.src = `./assets/music/${currentSong.filename}`;
+      const basePath = (environment as any).audioBasePath || 'assets/music';
+      this.audio.src = `./${basePath}/${currentSong.filename}`;
       console.log(`🔧 PWA: Using relative path: ${this.audio.src}`);
 
       // Add minimal event listeners
@@ -510,7 +511,8 @@ export class AudioService {
         // Try absolute URL as final fallback
         if (this.audio && !this.audio.src.includes('://')) {
           console.log('🔧 PWA: Trying absolute URL as final fallback');
-          this.audio.src = `${window.location.origin}/assets/music/${currentSong.filename}`;
+          const basePath = (environment as any).audioBasePath || 'assets/music';
+          this.audio.src = `${window.location.origin}/${basePath}/${currentSong.filename}`;
         }
       });
 
