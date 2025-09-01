@@ -70,6 +70,10 @@
                   "with": "src/manifest.yen.json"
                 }
               ],
+              "index": {
+                "input": "src/index.yen.html",
+                "output": "index.html"
+              },
               "outputHashing": "all",
               "serviceWorker": "ngsw-config.json"
             },
@@ -84,6 +88,10 @@
                   "with": "src/manifest.nam.json"
                 }
               ],
+              "index": {
+                "input": "src/index.nam.html",
+                "output": "index.html"
+              },
               "outputHashing": "all",
               "serviceWorker": "ngsw-config.json"
             },
@@ -98,6 +106,10 @@
                   "with": "src/manifest.vanh.json"
                 }
               ],
+              "index": {
+                "input": "src/index.vanh.html",
+                "output": "index.html"
+              },
               "outputHashing": "all",
               "serviceWorker": "ngsw-config.json"
             },
@@ -133,7 +145,7 @@
             "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
-            "assets": ["src/favicon.ico", "src/assets", "src/app.webmanifest"],
+            "assets": ["src/favicon.ico", "src/assets", "src/app.json"],
             "styles": ["src/styles.scss"],
             "scripts": []
           }
