@@ -7,16 +7,7 @@
       "installMode": "prefetch",
       "updateMode": "prefetch",
       "resources": {
-        "files": [
-          "/favicon.ico",
-          "/index.html",
-          "/app.webmanifest",
-          "/*.css",
-          "/*.js"
-        ]
-      },
-      "cacheQueryOptions": {
-        "ignoreVary": true
+        "files": ["/favicon.ico", "/index.html", "/app.json", "/*.css", "/*.js"]
       }
     },
     {
@@ -25,20 +16,6 @@
       "updateMode": "prefetch",
       "resources": {
         "files": ["/assets/**", "/assets/music/**"]
-      },
-      "cacheQueryOptions": {
-        "ignoreVary": true
-      }
-    }
-  ],
-  "dataGroups": [
-    {
-      "name": "api-performance",
-      "urls": ["/listen", "/", "/**"],
-      "cacheConfig": {
-        "strategy": "performance",
-        "maxSize": 100,
-        "maxAge": "1d"
       }
     }
   ],
