@@ -7,7 +7,7 @@
   "display": "standalone",
   "orientation": "portrait",
   "scope": "/",
-  "start_url": "/listen",
+  "start_url": "/listen?v=1.0.3",
   "icons": [
     {
       "src": "assets/icons/nam/icon-72x72.png",

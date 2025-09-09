@@ -6,9 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "build:default": "ng build",
-    "build:yen": "ng build -c yen && copy src\\manifest.yen.json dist\\angular-music-pwa\\browser\\app.json",
-    "build:nam": "ng build -c nam && copy src\\manifest.nam.json dist\\angular-music-pwa\\browser\\app.json",
-    "build:vanh": "ng build -c vanh && copy src\\manifest.vanh.json dist\\angular-music-pwa\\browser\\app.json",
+    "build:yen": "ng build -c yen && cp src/manifest.yen.json dist/angular-music-pwa/browser/app.json",
+    "build:nam": "ng build -c nam && cp src/manifest.nam.json dist/angular-music-pwa/browser/app.json",
+    "build:vanh": "ng build -c vanh && cp src/manifest.vanh.json dist/angular-music-pwa/browser/app.json",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
