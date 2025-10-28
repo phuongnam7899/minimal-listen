@@ -3,7 +3,7 @@
   "version": "1.0.4",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --configuration nam",
     "build": "ng build",
     "build:default": "ng build",
     "build:yen": "ng build -c yen && cp src/manifest.yen.json dist/angular-music-pwa/browser/app.json",

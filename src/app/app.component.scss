@@ -7,3 +7,16 @@
 body {
   background-color: #000;
 }
+
+.app-version {
+  position: fixed;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  font-size: 12px;
+  opacity: 0.8;
+  user-select: none;
+  pointer-events: none;
+  z-index: 1001;
+}

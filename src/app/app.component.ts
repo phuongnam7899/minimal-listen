@@ -11,6 +11,7 @@ import { environment } from '../environments/environment';
   styleUrl: './app.component.scss',
 })
 export class AppComponent implements OnInit {
+  readonly version = environment.version;
   constructor(private titleService: Title) {}
 
   ngOnInit(): void {
