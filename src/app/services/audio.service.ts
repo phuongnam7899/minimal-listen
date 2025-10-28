@@ -168,7 +168,7 @@ export class AudioService {
     }
   }
 
-  private loadRandomSong(): void {
+  private loadRandomSong(autoPlay: boolean = false): void {
     const randomIndex = Math.floor(Math.random() * this.songs.length);
     const selectedSong = this.songs[randomIndex];
     console.log(
@@ -265,6 +265,10 @@ export class AudioService {
         this.isLoadingSubject.next(false);
         console.log(`✅ Ready state set to false (canplay fallback)`);
       }
+      // Auto-play if requested (e.g., after previous song ended)
+      if (autoPlay) {
+        this.play();
+      }
     });
 
     // Multiple event listeners for better iPhone compatibility
@@ -278,6 +282,10 @@ export class AudioService {
 
       this.isLoadingSubject.next(false);
       console.log(`✅ Ready state set to false (canplaythrough)`);
+      // Fallback auto-play trigger as well
+      if (autoPlay) {
+        this.play();
+      }
     });
 
     this.audio.addEventListener('suspend', () => {
@@ -312,7 +320,7 @@ export class AudioService {
     this.audio.addEventListener('ended', () => {
       this.isPlayingSubject.next(false);
       // Load and play next random song when current song ends
-      this.loadRandomSong();
+      this.loadRandomSong(true);
     });
 
     this.audio.addEventListener('error', (e) => {
