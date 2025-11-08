@@ -8,9 +8,11 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     // Enable service worker for all platforms to ensure offline functionality
+    // Using 'registerImmediately' for faster update detection
+    // This ensures the service worker is registered as soon as possible
     provideServiceWorker('ngsw-worker.js', {
       enabled: !isDevMode(),
-      registrationStrategy: 'registerWhenStable:30000',
+      registrationStrategy: 'registerImmediately',
     }),
   ],
 };
