@@ -6,10 +6,7 @@ export const environment = {
   appTitle: "Vanh's Music",
   audioBasePath: 'assets/music/vanh',
   songs: [
-    { id: 1, title: 'Rain', filename: 'rain2.opus' },
-    { id: 2, title: 'Rain 2', filename: 'rain2.opus' },
-    { id: 3, title: 'Rain 3', filename: 'rain2.opus' },
-    { id: 4, title: 'Rain 4', filename: 'rain2.opus' },
+    { id: 1, title: 'Rain', filename: 'rain.mp3' },
     // Add Vanh's songs here
   ],
 };
