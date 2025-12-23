@@ -38,6 +38,45 @@
       </button>
     </div>
 
+    <div class="progress-container" *ngIf="!(isLoading$ | async)">
+      <ng-container *ngIf="duration$ | async as duration">
+        <ng-container *ngIf="currentTime$ | async as currentTime">
+          <div class="progress-track">
+            <div
+              class="progress-fill"
+              [style.width.%]="
+                duration > 0 ? (currentTime / duration) * 100 : 0
+              "
+            ></div>
+          </div>
+          <div class="time-labels">
+            <span class="time-current">{{ formatTime(currentTime) }}</span>
+            <span class="time-separator">/</span>
+            <span class="time-total">{{ formatTime(duration) }}</span>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+
+    <!-- Sleep / stop timer controls -->
+    <div class="stop-timer" *ngIf="!(isLoading$ | async)">
+      <button
+        class="stop-timer-btn"
+        (click)="onDecreaseStopTimer()"
+        [disabled]="stopTimerRemainingSeconds <= 0"
+      >
+        -30
+      </button>
+
+      <div class="stop-timer-display">
+        {{ formatTime(stopTimerRemainingSeconds) }}
+      </div>
+
+      <button class="stop-timer-btn" (click)="onIncreaseStopTimer()">
+        +30
+      </button>
+    </div>
+
     <!-- iOS Loading Indicator with user action -->
     <div class="ios-loading" *ngIf="isLoading$ | async">
       <p>Loading...</p>

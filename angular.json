@@ -129,6 +129,9 @@
             },
             "development": {
               "buildTarget": "angular-music-pwa:build:development"
+            },
+            "nam": {
+              "buildTarget": "angular-music-pwa:build:nam"
             }
           },
           "defaultConfiguration": "development"

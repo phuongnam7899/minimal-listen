@@ -20,6 +20,8 @@ export class ListenComponent implements OnInit, OnDestroy {
   currentSong$: Observable<Song | null>;
   isLoading$: Observable<boolean>;
   updateAvailable$: Observable<boolean>;
+  currentTime$: Observable<number>;
+  duration$: Observable<number>;
 
   // 🐛 DEBUG MODE - Set to false to hide debug console
   showDebugConsole = true;
@@ -27,6 +29,11 @@ export class ListenComponent implements OnInit, OnDestroy {
   // Force load button for iPhone
   showForceLoadButton = false;
   private isCurrentlyLoading = false;
+
+  // Sleep / stop timer state (in seconds)
+  private readonly stopTimerStepSeconds = 30 * 60; // 30 minutes
+  stopTimerRemainingSeconds = this.stopTimerStepSeconds;
+  private stopTimerIntervalId: number | null = null;
 
   constructor(
     private audioService: AudioService,
@@ -36,6 +43,13 @@ export class ListenComponent implements OnInit, OnDestroy {
     this.currentSong$ = this.audioService.currentSong$;
     this.isLoading$ = this.audioService.isLoading$;
     this.updateAvailable$ = this.pwaService.updateAvailable$;
+    this.currentTime$ = this.audioService.currentTime$;
+    this.duration$ = this.audioService.duration$;
+
+    this.isPlaying$.pipe(takeUntil(this.destroy$)).subscribe((playing) => {
+      console.log('Component: isPlaying changed to:', playing);
+      this.startStopTimerIfNeeded(playing);
+    });
   }
 
   ngOnInit(): void {
@@ -48,10 +62,6 @@ export class ListenComponent implements OnInit, OnDestroy {
       isIPhone,
       isIPad,
       userAgent: navigator.userAgent,
-    });
-
-    this.isPlaying$.pipe(takeUntil(this.destroy$)).subscribe((playing) => {
-      console.log('Component: isPlaying changed to:', playing);
     });
 
     this.isLoading$.pipe(takeUntil(this.destroy$)).subscribe((loading) => {
@@ -81,13 +91,9 @@ export class ListenComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.clearStopTimerInterval();
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  onTogglePlayPause(): void {
-    console.log('Component: Play/pause button clicked');
-    this.audioService.togglePlayPause();
   }
 
   onApplyUpdate(): void {
@@ -112,5 +118,95 @@ export class ListenComponent implements OnInit, OnDestroy {
       // Fallback: just force reload
       this.audioService.forceReload();
     }
+  }
+
+  // ---- Sleep / stop timer API ----
+
+  onIncreaseStopTimer(): void {
+    // Increase remaining time by 30 minutes
+    this.stopTimerRemainingSeconds += this.stopTimerStepSeconds;
+  }
+
+  onDecreaseStopTimer(): void {
+    if (this.stopTimerRemainingSeconds <= 0) {
+      this.stopTimerRemainingSeconds = 0;
+      return;
+    }
+
+    this.stopTimerRemainingSeconds -= this.stopTimerStepSeconds;
+
+    if (this.stopTimerRemainingSeconds <= 0) {
+      this.stopTimerRemainingSeconds = 0;
+      // If timer hits zero while playing, stop audio immediately
+      this.handleStopTimerReachedZero();
+    }
+  }
+
+  onTogglePlayPause(): void {
+    console.log('Component: Play/pause button clicked');
+    this.audioService.togglePlayPause();
+
+    // We rely on isPlaying$ subscription to start/stop the timer,
+    // so no direct timer manipulation is needed here.
+  }
+
+  private startStopTimerIfNeeded(isPlaying: boolean): void {
+    if (!isPlaying) {
+      this.clearStopTimerInterval();
+      return;
+    }
+
+    if (this.stopTimerRemainingSeconds <= 0) {
+      // Nothing to count down to
+      this.clearStopTimerInterval();
+      return;
+    }
+
+    // Avoid multiple intervals
+    this.clearStopTimerInterval();
+
+    this.stopTimerIntervalId = window.setInterval(() => {
+      if (this.stopTimerRemainingSeconds <= 0) {
+        this.stopTimerRemainingSeconds = 0;
+        this.handleStopTimerReachedZero();
+        return;
+      }
+
+      this.stopTimerRemainingSeconds -= 1;
+
+      if (this.stopTimerRemainingSeconds <= 0) {
+        this.stopTimerRemainingSeconds = 0;
+        this.handleStopTimerReachedZero();
+      }
+    }, 1000);
+  }
+
+  private clearStopTimerInterval(): void {
+    if (this.stopTimerIntervalId != null) {
+      window.clearInterval(this.stopTimerIntervalId);
+      this.stopTimerIntervalId = null;
+    }
+  }
+
+  private handleStopTimerReachedZero(): void {
+    this.clearStopTimerInterval();
+    console.log('Sleep timer reached zero, stopping audio');
+    // Stop playback via audio service
+    this.audioService.togglePlayPause();
+  }
+
+  formatTime(seconds: number | null | undefined): string {
+    if (!seconds || !Number.isFinite(seconds) || seconds < 0) {
+      return '00:00';
+    }
+
+    const wholeSeconds = Math.floor(seconds);
+    const minutes = Math.floor(wholeSeconds / 60);
+    const remainingSeconds = wholeSeconds % 60;
+
+    const minutesStr = minutes.toString().padStart(2, '0');
+    const secondsStr = remainingSeconds.toString().padStart(2, '0');
+
+    return `${minutesStr}:${secondsStr}`;
   }
 }

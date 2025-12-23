@@ -21,12 +21,17 @@ export class AudioService {
   private currentSongSubject = new BehaviorSubject<Song | null>(null);
   private isLoadingSubject = new BehaviorSubject<boolean>(false);
   private errorSubject = new BehaviorSubject<string | null>(null);
+  private currentTimeSubject = new BehaviorSubject<number>(0);
+  private durationSubject = new BehaviorSubject<number>(0);
 
   public isPlaying$: Observable<boolean> = this.isPlayingSubject.asObservable();
   public currentSong$: Observable<Song | null> =
     this.currentSongSubject.asObservable();
   public isLoading$: Observable<boolean> = this.isLoadingSubject.asObservable();
   public error$: Observable<string | null> = this.errorSubject.asObservable();
+  public currentTime$: Observable<number> =
+    this.currentTimeSubject.asObservable();
+  public duration$: Observable<number> = this.durationSubject.asObservable();
 
   constructor() {
     console.log('🎵 AudioService: Initializing music player...');
@@ -178,6 +183,9 @@ export class AudioService {
     );
 
     this.currentSongSubject.next(selectedSong);
+    // Reset progress state for the new song
+    this.currentTimeSubject.next(0);
+    this.durationSubject.next(0);
     this.errorSubject.next(null);
 
     if (this.audio) {
@@ -241,6 +249,11 @@ export class AudioService {
         `📊 Network state: ${this.audio?.networkState}, Ready state: ${this.audio?.readyState}`
       );
 
+      // Update duration when metadata is available
+      if (this.audio && Number.isFinite(this.audio.duration)) {
+        this.durationSubject.next(this.audio.duration);
+      }
+
       if (isIPhone && this.isLoadingSubject.value) {
         // For iPhone, metadata loaded is enough to consider it ready
         this.isLoadingSubject.next(false);
@@ -253,6 +266,18 @@ export class AudioService {
       console.log(
         `📊 Network state: ${this.audio?.networkState}, Ready state: ${this.audio?.readyState}`
       );
+    });
+
+    // Update current playback time as the audio plays
+    this.audio.addEventListener('timeupdate', () => {
+      if (!this.audio) {
+        return;
+      }
+
+      const currentTime = this.audio.currentTime ?? 0;
+      if (Number.isFinite(currentTime)) {
+        this.currentTimeSubject.next(currentTime);
+      }
     });
 
     this.audio.addEventListener('canplay', () => {
@@ -319,6 +344,7 @@ export class AudioService {
 
     this.audio.addEventListener('ended', () => {
       this.isPlayingSubject.next(false);
+      this.currentTimeSubject.next(0);
       // Load and play next random song when current song ends
       this.loadRandomSong(true);
     });
